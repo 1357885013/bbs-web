@@ -1,0 +1,30 @@
+/* CSS Document */
+body{
+	background-color: rgb(189, 192, 186);
+	text-align: center;
+	vertical-align: middle;
+}
+.login_box
+{
+width:300px;
+height: 600px;
+margin: 10px auto;
+padding: 5px;
+background-color:rgba(255,255,255,0.9);
+border-radius: 5px;
+}
+
+.stutes-change{
+	height: 100px;
+}
+.stutes-change ul li{ float: left;width: 50px;}
+
+#login-center div{
+	height: 50px;
+}
+.input p{
+	width: 50px;
+}
+.input *{
+	display: inline;
+}

@@ -1,0 +1,113 @@
+{extend name="common@base-main" /}
+{block name="content"}
+<div id="login"> <!--登录框-->
+    <div style="border-bottom: solid #ddd 1px;margin: 0 -12px;margin-bottom: 22px;"><h2 style="text-align: center;margin-top: 0px;">学生注册</h2></div>
+    <form id="form">
+        <div class="form-group">
+            <label for="name">姓名</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="请输入姓名,2位及以上汉字">
+            <!--type写不对不会实时验证字段正确性-->
+        </div>
+        <div class="form-group" >
+            <label for="stuNum">学号</label>
+            <input type="text" class="form-control" id="stuNum" name="stuNum" placeholder="学号">
+        </div>
+        <div class="form-group" >
+            <label for="email">邮箱</label>
+            <input type="text" class="form-control" id="email" name="email" placeholder="找回密码时使用">
+        </div>
+        <div class="form-group" id="radio-div" >
+            <label  for="sex1">性别</label>
+            <div >
+                <label class="radio-inline">
+                <input type="radio" name="sex" id="sex1" value="1"> 男
+            </label>
+                <label class="radio-inline">
+                    <input type="radio" name="sex" id="sex2" value="2"> 女
+                </label>
+            </div>
+        </div>
+        <div class="form-group" >
+            <label for="school">学校</label>
+            <input oninput="getList(this)" type="text" class="form-control" list="list-school" id="school" name="school" placeholder="学校">
+            <datalist id="list-school">
+            </datalist>
+        </div>
+        <div class="form-group" >
+            <label for="institute">学院</label>
+            <input oninput="getList(this)" type="text" class="form-control" list="list-institute" id="institute" name="institute" placeholder="学院">
+            <datalist id="list-institute">
+            </datalist>
+        </div>
+        <div class="form-group" >
+            <label for="password">密码</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="6-15位字母数字混合密码">
+        </div>
+        <div class="form-group" >
+            <label for="rePassword">确认密码</label>
+            <input type="password" class="form-control" id="rePassword" name="rePassword" placeholder="重新输入一遍密码">
+        </div>
+        <div {$captcha_control} class="form-group captcha" style="height: 65px;">
+            <div class="form-group  captcha-div" {$captcha_control}><!--隐藏验证码添加hidden=""属性-->
+                <label for="captcha">验证码</label>
+                <input type="text" class="form-control" id="captcha" name="captcha" placeholder="不区分大小写">
+            </div>
+            <img {$captcha_control} class="" id="captchaImg" src="{:url('common/captcha/getImg')}" onclick="refreshImg()" alt="验证码加载中..."/>
+        </div>
+        <div class="btn-div">
+            <a type="submit" onclick="submit_login()" class="btn btn-default">注册</a>
+        </div>
+
+        <input id="client_id" type="text" hidden=""  name="client_id">
+
+    </form>
+</div>
+<script>
+    form = $('#form');
+    form.validate(myValid);
+
+    function submit_login() {
+        var err=form.valid();
+        if(!err){
+            return 0;
+        }
+        $.ajax({
+            url: "{:url('student/register/register')}",
+            type: "post",
+            data: form.serialize(),
+            success: function (data) {
+                data = JSON.parse(data);
+                if('register' == data['type'] && 0 == data['code']){
+                    refreshImg();
+                    $("#captcha").val("");
+                }
+                progressMessage(data);
+            }
+        });
+    }
+    function refreshImg() {
+        $("#captchaImg").attr("src","{:url('common/captcha/getImg')}?rnd="+Math.random());
+    }
+    function getList(e) {
+        //学校和学院的下拉列表
+        reg = /[a-z]/i;
+        if ("" != e.value&&!reg.test(e.value))
+        $.ajax({
+            url:"{:url('education/register/dropdwon')}" ,
+            type: "post",
+            data: "which="+e.name+"&value="+e.value,
+            global:true,
+            success: function (data)
+            {
+                item=$("#list-"+e.name);
+                item.empty();
+                for (i in data)
+                {
+                    item.append("<option>"+data[i]+"</option>");
+                }
+            }
+        });
+    }
+</script>
+{/block}
+{block name="chatbox"}{/block} 

@@ -1,0 +1,225 @@
+/* CSS Document
+#F5EBDC
+#B4A2A3
+#00736d
+#CEBB9F
+*/
+body {
+    margin-top: 10px;
+    background-color:#CEBB9F ;
+    width: 100%;
+    height: 100%;
+}
+.table{
+    margin-bottom: 0px;
+}
+.table th{
+    vertical-align: inherit!important;
+}
+.scrollbar {
+    padding-right: 0px;
+    OVERFLOW-Y: scroll;
+    overflow-x: auto;
+}
+.scrollbar::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+ border-radius: 10px;
+ -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+ background: #535353;
+}
+.scrollbar::-webkit-scrollbar {/*滚动条整体样式*/
+ width: 5px;     /*高宽分别对应横竖滚动条的尺寸*/
+}
+.scrollbar::-webkit-scrollbar-track {/*滚动条里面轨道*/
+        /*-webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);*/
+        border-radius: 10px;
+ background: rgba(0,0,0,0.5);
+}
+#mySvg {
+    background-color: aliceblue;
+    border-radius: 10px;
+    position: relative;
+    overflow-y: scroll;
+    height: 2590px;
+    width: 100%;
+}
+.headImg {
+    height: 59px;
+    width: 59px;
+    margin: 5px 10px 0px 10px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+}
+
+.mainbox{
+    margin-right: 10px;
+}
+
+
+/*聊天框*/
+#chatBox{
+    /*控制聊天框按钮位置的框*/
+    background-color:rgba(225,225,225,0);
+    z-index: 2;
+}
+.toolbar-chatbox{
+	background-color: aliceblue; border-radius: 12px 12px 0px 0px; height: 30px;
+}
+
+.chatBox{
+    z-index: 3;
+    margin: 0px; padding: 0px; position: fixed;bottom: 3px; top: 66px; right: -400px;
+	width: 400px;  background-color:rgba(223,227,230,0.7); border-radius:12px; padding: 0px;
+}
+.scrollbar-chatbox{
+    position: absolute;
+    right: 0px;
+    left: 0px;
+    bottom: 100px;
+    top: 34px;
+}
+.chatBox .title-div{
+    width: 400px;
+    border-radius: 12px 12px 0px 0px;
+    background-color:rgba(223,227,230,0.8);
+    height: 30px;
+}
+.chatBox:first-child{
+ }
+.chatBox .title-div p{
+    margin: auto;
+    padding: 5px;
+    font-size: 17px;
+    text-align: center;
+}
+.head-th{
+    vertical-align: super;
+}
+.chatBox tr:first-child img{
+
+}
+.chat-name{
+    font-family: '微软雅黑';
+    font-size: 14px; margin:0px 8px 5px 4px;font-weight: lighter;
+}
+.chat-text{
+    font-family: '微软雅黑'; font-size: 18px;
+    font-weight: lighter;
+    background-color:rgba(223,227,230,0.92);
+    border-radius:12px; padding: 8px;margin-right: 8px;
+}
+
+
+
+
+.footer-chatbox{
+	width: 100%;
+    border-radius: 0px 0px 12px 12px;
+    height: 100px;
+    position: absolute;
+    bottom: 0px;
+    background-color:rgba(223,227,230,0.9);
+    padding: 10px;
+}
+.footer-chatbox>textarea{
+	display: block;
+    width: 100%;
+    padding: 5px 0 0;
+    height: 55px;
+    line-height: 20px;
+    border: none;
+    overflow: auto;
+    resize: none;
+}
+.footer-chatbox>button{
+	text-align: center;
+    float: right;
+    margin-top: 6px;
+    margin-right: 8px;
+}
+#chatBox dl {
+    direction: rtl;
+    padding:0px;
+    margin:0px;
+    width:24px;
+    position:absolute;
+    left:-24px;
+    top:45%;
+    bottom:0;
+    vertical-align:middle;
+    margin-top:-240px;
+}
+#chatBox dd {
+    margin: 1px 0;
+    font:normal 16px/normal 'microsoft yahei';
+}
+#chatBox dt {
+    position: absolute;
+    width: 44px;
+    display: block;
+    bottom: 85px;
+}
+#chatBox button {
+    width: 34px;
+    height: min-content;
+}
+
+
+/*登录*/
+#login label{
+    margin: 6px auto;
+}
+
+#login{
+	width: 600px;
+	z-index: 5;
+	background-color: white;
+	padding: 12px;
+	margin: 150px auto;
+	border-radius:7px;
+}
+
+#radio-div>div{
+    width: max-content;
+}
+#radio-div>div>label{
+    margin-left: 20px;
+}
+#radio-div .radio-inline{
+    position: static;
+}
+#radio-div .glyphicon{
+    top: 30px;
+}
+
+#login input[type=radio] {
+    position: absolute;
+    margin-top: 4px\9;
+    margin-left: -20px;
+}
+.captcha-div{
+    width: 140px;
+    float: left;
+}
+
+#login img{
+    float: left;
+    margin-top: 10px;
+    margin-left: 44px;
+}
+.btn-div{
+    width: min-content;
+    margin:27px auto;
+}
+.btn-div>button{
+    margin-top: 30px;
+}
+.errorBox{
+color: red; float: right;
+}
+
+#mes .modal-body{
+    text-align: center;
+}
+
+
