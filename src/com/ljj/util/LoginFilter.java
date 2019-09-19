@@ -1,9 +1,8 @@
 package com.ljj.util;
 
-import com.sun.deploy.net.HttpRequest;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class LoginFilter implements Filter {
@@ -14,11 +13,14 @@ public class LoginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest)servletRequest;
-        System.out.println("request.getSession().getAttribute(\"logined\") = " + request.getSession().getAttribute("logined"));
-        System.out.println("request.getServletPath() = " + request.getServletPath());
-
-        filterChain.doFilter(servletRequest,servletResponse);
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String path = request.getServletPath();
+        //System.out.println(path);
+        if (path.equals("/login.jsp") || path.equals("/login")|| path.equals("/testVue.jsp")|| path.indexOf("js")>0 || request.getSession().getAttribute("logined") != null)
+            filterChain.doFilter(servletRequest, servletResponse);
+        else { //重定向到login
+            ((HttpServletResponse) servletResponse).sendRedirect("/bbs_web/login.jsp");
+        }
     }
 
     @Override

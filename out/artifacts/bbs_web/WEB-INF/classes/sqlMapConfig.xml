@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <typeAliases>
+<!--        <typeAlias alias="Post" type="com.ljj.entity.Post"/>-->
+        <package name="com.ljj.entity"/>
+        <package name="com.ljj.dao"/>
+    </typeAliases>
+
+    <environments default="ljj">
+        <environment id="ljj">
+            <transactionManager type="JDBC"></transactionManager>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="JDBC:mysql://localhost:3306/bbs"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+<!--                <package name="com.ljj.dao"/>-->
+        <mapper resource="com/ljj/dao/ReplyMapper.xml"/>
+<!--        <mapper class="com.ljj.dao.IReplyDao"/>-->
+    </mappers>
+
+</configuration>

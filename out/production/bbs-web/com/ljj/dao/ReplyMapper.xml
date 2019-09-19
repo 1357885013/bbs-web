@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.ljj.dao.IReplyDao">
+    <resultMap id="getAllResultMapper" type="Post">
+        <id column="pId" property="id"/>
+        <result column="pTitle" property="title"/>
+        <result column="pContext" property="context"/>
+        <result column="pTime" property="time"/>
+        <result column="pUId" property="userId"/>
+        <result column="pUName" property="userName"/>
+        <collection property="replies" javaType="Reply">
+            <result column="rId" property="id"/>
+            <result column="rContext" property="context"/>
+            <result column="rTime" property="time"/>
+            <result column="rUId" property="userId"/>
+            <result column="rUName" property="userName"/>
+        </collection>
+       
+    </resultMap>
+    <select id="getAll" parameterType="int" resultMap="getAllResultMapper">
+SELECT
+	pId,
+	pTitle,
+	pContext,
+	pTime,
+	post.uId AS pUId,
+	pUser.uName AS pUName,
+	rId,
+	rContext,
+	rTime,
+	reply.uId AS rUId,
+	rUser.uName AS rUName
+FROM
+	post
+	JOIN USER AS pUser ON post.uId = pUser.uId
+	JOIN reply USING ( pId )
+	JOIN USER AS rUser ON reply.uId = rUser.uId
+WHERE
+	pId = #{pId}
+ORDER BY
+	rTime
+	 </select>
+
+    <insert id="add" parameterType="Reply"><!--这里员Dao返回的是boolean-->
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id();
+        </selectKey>
+        insert into reply values(null,#{context},#{time},#{userId},#{postId})
+    </insert>
+
+    <select id="getIdByTitle" parameterType="String" resultType="int">
+        select rId from reply where rTitle=#{title}
+    </select>
+    <delete id="delete" parameterType="Reply">
+        <!--    public boolean delete(int replyId, int postId, int userId, boolean isAdmin);-->
+        delete from reply where pId=#{postId} and rId=#{id}
+    </delete>
+    <update id="change" parameterType="Reply">
+        <!--    public boolean change(int replyId, int postId, int userId, String content);-->
+        update reply set rContext=#{context} where pId=#{postId} and rId=#{id}
+    </update>
+
+    <select id="getUserId" parameterType="int" resultType="int">
+        select uId from reply where rId=#{rId}
+    </select>
+
+
+</mapper>

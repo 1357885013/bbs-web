@@ -7,7 +7,6 @@ import java.util.Date;
 
 public class Reply {
     private int id;
-    private String title;
     private String context;
     private long Time;
     private int userId;
@@ -18,7 +17,6 @@ public class Reply {
     public String toString() {
         return "Reply{" +
                 "id=" + id +
-                ", title='" + title + '\'' +
                 ", context='" + context + '\'' +
                 ", Time=" + Time +
                 ", userId=" + userId +
@@ -30,11 +28,12 @@ public class Reply {
     public Reply() {
     }
 
-    public Reply(int id, String context, String userName, Timestamp time) {
+    public Reply(int id, String context, String userName,int userId, Timestamp time) {
         this.id = id;
         this.context = context;
         Time = time.getTime();
         this.userName = userName;
+        this.userId = userId;
     }
 
     public int getId() {
@@ -45,14 +44,6 @@ public class Reply {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getContext() {
         return context;
     }
@@ -61,8 +52,8 @@ public class Reply {
         this.context = context;
     }
 
-    public long getTime() {
-        return Time;
+    public Date getTime() {
+        return new Date(Time);
     }
 
     public void setTime(long time) {

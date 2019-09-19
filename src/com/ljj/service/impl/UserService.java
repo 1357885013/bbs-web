@@ -5,16 +5,15 @@ import com.ljj.entity.User;
 import com.ljj.service.IUserService;
 import com.ljj.util.Scan;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
-public class UserService extends HttpServlet implements IUserService {
+public class UserService extends HttpServlet implements IUserService, HttpSessionBindingListener {
     public User user = new User();
     private Scanner scan = Scan.scan;
     private UserDao dao = new UserDao();
@@ -34,7 +33,7 @@ public class UserService extends HttpServlet implements IUserService {
                     resp.getWriter().printf(JSONmessage, 0, "账号和密码不能为空！", -1);
                     return;
                 }
-                User user = new User(username, password, (req.getParameter("ban") != null), (req.getParameter("admin") != null));
+                user = new User(username, password, (req.getParameter("ban") != null), (req.getParameter("admin") != null));
                 switch (dao.register(user)) {
                     case 1:
                         resp.getWriter().printf(JSONmessage, 1, "添加成功！", user.getId());
@@ -55,7 +54,8 @@ public class UserService extends HttpServlet implements IUserService {
                 switch (login(username, password)) {
                     case 1:
                         req.setAttribute("message", "login succed,Welcome to LJJ BBS");
-                        req.getSession().setAttribute("logined",new Date().getTime());
+                        req.getSession().setAttribute("logined", new Date().getTime());
+                        req.getServletContext().setAttribute("user", user);
                         req.getRequestDispatcher("block.jsp").forward(req, resp);
                         break;
                     case 0:
@@ -191,6 +191,25 @@ public class UserService extends HttpServlet implements IUserService {
             } else {
                 System.out.println("失败");
             }
+        }
+    }
+
+    @Override
+    public void valueBound(HttpSessionBindingEvent httpSessionBindingEvent) {
+        if (httpSessionBindingEvent.getName().equals("user")) {
+            ServletContext context = httpSessionBindingEvent.getSession().getServletContext();
+            if (context.getAttribute("onlineCount") == null)
+                context.setAttribute("onlineCount", 1);
+            else
+                context.setAttribute("onlineCount", (Integer) context.getAttribute("onlineCount") + 1);
+        }
+    }
+
+    @Override
+    public void valueUnbound(HttpSessionBindingEvent httpSessionBindingEvent) {
+        if (httpSessionBindingEvent.getName().equals("user")) {
+            ServletContext context = httpSessionBindingEvent.getSession().getServletContext();
+            context.setAttribute("onlineCount", (Integer) context.getAttribute("onlineCount") + 1);
         }
     }
 }

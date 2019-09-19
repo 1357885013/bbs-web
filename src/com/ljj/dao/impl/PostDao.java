@@ -29,6 +29,7 @@ public class PostDao implements IPostDao {
         }
         return posts;
     }
+
     @Override
     public ArrayList<Post> getByBlockId(int id) {
         Connection con = Factory.getCon();
@@ -37,10 +38,10 @@ public class PostDao implements IPostDao {
         ArrayList<Post> posts = new ArrayList<>();
         try {
             state = con.prepareStatement("select pId,pTitle,pContext,uId,uName,pTime from post join user using(uId) where bId = ?");
-            state.setInt(1,id);
+            state.setInt(1, id);
             res = state.executeQuery();
             while (res.next()) {
-                posts.add(new Post(res.getInt(1), res.getString(2), res.getString(3), res.getInt(4),res.getString(5), res.getTimestamp(6)));
+                posts.add(new Post(res.getInt(1), res.getString(2), res.getString(3), res.getInt(4), res.getString(5), res.getTimestamp(6)));
             }
         } catch (SQLException e) {
             System.out.println(e.getSQLState() + e.getSQLState());
@@ -51,6 +52,7 @@ public class PostDao implements IPostDao {
         }
         return posts;
     }
+
     @Override
     public boolean create(Post post) throws SQLException {
         Connection con = Factory.getCon();
@@ -71,7 +73,7 @@ public class PostDao implements IPostDao {
                 }
             }
             return false;
-        }catch(SQLException e){
+        } catch (SQLException e) {
             return false;
         } finally {
             Factory.closeAll(null, state, con);
@@ -99,14 +101,15 @@ public class PostDao implements IPostDao {
         }
         return -1;
     }
+
     @Override
-    public boolean change(Post post){
+    public boolean change(Post post) {
         Connection con = Factory.getCon();
         PreparedStatement state = null;
         try {
             state = con.prepareStatement("update post set pTitle=?,pContext=? where pId=?");
-            state.setString(1,post.getTitle());
-            state.setString(2,post.getContext());
+            state.setString(1, post.getTitle());
+            state.setString(2, post.getContext());
             state.setInt(3, post.getId());
 
             int res = state.executeUpdate();

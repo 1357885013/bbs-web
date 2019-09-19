@@ -1,9 +1,9 @@
-<%@ page import="com.ljj.dao.impl.PostDao" %>
-<%@ page import="com.ljj.dao.impl.ReplyDao" %>
+<%@ page import="com.ljj.dao.IReplyDao" %>
 <%@ page import="com.ljj.entity.Post" %>
 <%@ page import="com.ljj.entity.Reply" %>
-<%@ page import="com.ljj.service.impl.ReplyService" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.ljj.factory.MySqlSessionFactory" %>
+<%@ page import="org.apache.ibatis.session.SqlSession" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -59,15 +59,19 @@
 <div class="center-block">
     <%
         int postId = Integer.parseInt(request.getParameter("postId"));
-        ReplyService replyService = new ReplyService();
-        Post post = new Post();
-        post.setId(postId);
-        (new PostDao()).getPostById(post);
-        ArrayList<Reply> replys = (new ReplyDao()).getAll(postId);
+        SqlSession sqlSession = MySqlSessionFactory.getSqlSession();
 
+//        Post post = sqlSession.selectOne("getAll", postId);
+
+        IReplyDao dao = sqlSession.getMapper(IReplyDao.class);
+        Post post = dao.getAll(postId);
+
+        List<Reply> replys = post.getReplies();
         pageContext.setAttribute("post", post);
         pageContext.setAttribute("replys", replys);
     %>
+
+
     <div class="table-responsive">
         <button style="float: right" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
             回复
@@ -80,8 +84,11 @@
                 <th>内容</th>
                 <th>时间</th>
                 <th>发帖人</th>
-                <th>修改</th>
-                <th>删除</th>
+                <c:if test="${user.isAdmin()}">
+
+                    <th>修改</th>
+                    <th>删除</th>
+                </c:if>
             </tr>
             </thead>
             <tbody id="tbody">
@@ -91,22 +98,27 @@
                 <td>${post.getFormatTime()}</td>
                 <td>${post.getUserName()}</td>
             </tr>
-            <c:forEach var="post" items="${replys}">
-                <tr id=${post.id}>
-                    <td>${post.id}</td>
-                    <td>${post.context}</td>
-                    <td>${post.getFormatTime()}</td>
-                    <td>${post.getUserName()}</td>
-                    <td>
-                        <button type="button" style="display: inline" class="btn btn-warning  btn-sm btn-change"
-                                name="text" data-toggle="modal" data-target="#modal-change">修改
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button" style="display: inline" class="btn btn-danger  btn-sm"
-                                onclick="if(confirm('将完全删除版块！'))delStu(this)">删除
-                        </button>
-                    </td>
+            <c:forEach var="reply" items="${replys}">
+                <tr id=${reply.id}>
+                    <td>${reply.id}</td>
+                    <td>${reply.context}</td>
+                    <td>${reply.getFormatTime()}</td>
+                    <td>${reply.getUserName()}</td>
+                    <c:if test="${user.isAdmin() ||  user.getId() == reply.getUserId()}">
+
+                        <td>
+                            <button type="button" style="display: inline" class="btn btn-warning  btn-sm btn-change"
+                                    name="text" data-toggle="modal" data-target="#modal-change">修改
+                            </button>
+                        </td>
+                    </c:if>
+                    <c:if test="${user.isAdmin() || user.getId() == post.getUserId()|| user.getId() == reply.getUserId()}">
+                        <td>
+                            <button type="button" style="display: inline" class="btn btn-danger  btn-sm"
+                                    onclick="if(confirm('将完全删除版块！'))delStu(this)">删除
+                            </button>
+                        </td>
+                    </c:if>
                 </tr>
             </c:forEach>
             </tbody>

@@ -1,7 +1,6 @@
 <%@ page import="com.ljj.entity.Post" %>
 <%@ page import="com.ljj.service.impl.PostService" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -73,8 +72,10 @@
                 <th>时间</th>
                 <th>发帖人</th>
                 <th>查看详细</th>
-                <th>修改</th>
-                <th>删除</th>
+                <c:if test="${user.isAdmin()}">
+                    <th>修改</th>
+                    <th>删除</th>
+                </c:if>
             </tr>
             </thead>
             <tbody id="tbody">
@@ -91,16 +92,19 @@
                             进入
                         </button>
                     </td>
-                    <td>
-                        <button type="button" style="display: inline" class="btn btn-warning  btn-sm btn-change"
-                                name="text" data-toggle="modal" data-target="#modal-change">修改
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button" style="display: inline" class="btn btn-danger  btn-sm"
-                                onclick="if(confirm('将完全删除版块！'))delStu(this)">删除
-                        </button>
-                    </td>
+                    <c:if test="${user.isAdmin() || user.getId() == post.getUserId()}">
+
+                        <td>
+                            <button type="button" style="display: inline" class="btn btn-warning  btn-sm btn-change"
+                                    name="text" data-toggle="modal" data-target="#modal-change">修改
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" style="display: inline" class="btn btn-danger  btn-sm"
+                                    onclick="if(confirm('将完全删除版块！'))delStu(this)">删除
+                            </button>
+                        </td>
+                    </c:if>
                 </tr>
             </c:forEach>
             </tbody>
@@ -231,7 +235,7 @@
             $.ajax({
                 url: "post",
                 type: "post",
-                data: $("#form-add").serialize()+"&blockId="+blockId+"&time="+Date.parse(new Date()),
+                data: $("#form-add").serialize() + "&blockId=" + blockId + "&time=" + Date.parse(new Date()),
                 success: function (data) {
                     data = JSON.parse(data);
                     console.log(data);

@@ -59,11 +59,15 @@
         BlockService blockService = new BlockService();
         ArrayList<Block> blocks = blockService.listAll();
         pageContext.setAttribute("blocks", blocks);
+        
         //response.getOutputStream().write(Arrays.toString(blocks.toArray()).getBytes());
     %>
     <div class="table-responsive">
         <button style="float: right" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-add">
             添加版块
+        </button>
+        <button style="float: right" type="button" class="btn btn-primary" >
+            ${onlineCount}人在线
         </button>
         <a style="float: right" type="button" class="btn btn-primary" data-target="blank" href="user.jsp">
             管理用户
@@ -75,8 +79,10 @@
                 <th>#</th>
                 <th>版块名</th>
                 <th>进入</th>
-                <th>修改</th>
-                <th>删除</th>
+                <c:if test="${user.isAdmin()}">
+                    <th>修改</th>
+                    <th>删除</th>
+                </c:if>
             </tr>
             </thead>
             <tbody id="tbody">
@@ -90,16 +96,18 @@
                             进入
                         </button>
                     </td>
-                    <td>
-                        <button type="button" style="display: inline" class="btn btn-warning  btn-sm btn-change"
-                                name="text" data-toggle="modal" data-target="#modal-change">修改
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button" style="display: inline" class="btn btn-danger  btn-sm"
-                                onclick="if(confirm('将完全删除版块！'))delStu(this)">删除
-                        </button>
-                    </td>
+                    <c:if test="${user.isAdmin()}">
+                        <td>
+                            <button type="button" style="display: inline" class="btn btn-warning  btn-sm btn-change"
+                                    name="text" data-toggle="modal" data-target="#modal-change">修改
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" style="display: inline" class="btn btn-danger  btn-sm"
+                                    onclick="if(confirm('将完全删除版块！'))delStu(this)">删除
+                            </button>
+                        </td>
+                    </c:if>
                 </tr>
             </c:forEach>
             </tbody>
