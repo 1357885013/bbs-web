@@ -19,7 +19,7 @@
             <result column="rUId" property="userId"/>
             <result column="rUName" property="userName"/>
         </collection>
-       
+
     </resultMap>
     <select id="getAll" parameterType="int" resultMap="getAllResultMapper">
 SELECT
