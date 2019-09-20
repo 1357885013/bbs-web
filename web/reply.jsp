@@ -122,6 +122,9 @@
     </div>
 
     <script>
+        var blockId = ${blockId};
+        var postId = ${postId};
+
         var app_table = new Vue({
             el: "#app-table",
             methods: {
@@ -139,7 +142,9 @@
                         }
                     });
                 }, handleEdit(index, row) {
-                    console.log(index, row);
+                    app_dialog.dialogFormVisible = true;
+                    app_dialog.title = "删除"
+
                 }, formatter(row, column) {
                     //console.log(row, column);
                     return row.address + "formatted";
@@ -163,8 +168,7 @@
     </script>
 
     <div id="dialog">
-        <el-button type="text" @click="dialogFormVisible = true">添加</el-button>
-        <el-button type="text" @click="dialogFormVisible = true">删除</el-button>
+        <el-button type="text" @click="dialogFormVisible = true;app_dialog.title='回复'">添加</el-button>
 
         <el-dialog title="dsaf" :visible.sync="dialogFormVisible">
             <el-form :model="form">
@@ -173,7 +177,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false;app_dialog.onDelete()">取 消</el-button>
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
                 <el-button type="primary" @click="dialogFormVisible = false;app_dialog.onSubmit()">确 定</el-button>
             </div>
         </el-dialog>
@@ -191,92 +195,47 @@
                 formLabelWidth: '120px'
             }, methods: {
                 onSubmit() {
-                    console.log("fdsafd");
-                    $.ajax({
-                        url: "reply",
-                        type: "post",
-                        data: "content=" + this.form.content + "&blockId=" + "&type=add" + "&postId=" + postId + "&time=" + Date.parse(new Date()),
-                        success: function (data) {
-                            data = JSON.parse(data);
-                            console.log(data);
-                            showMessage(data['message']);
-                            if (data['code'] === 1) {
-                                //window.location.reload();
-                                app_table.tableData.push({
-                                    id: data['id'],
-                                    content: app_dialog.form.content,
-                                    time: Date.parse(new Date()),
-                                    userName: 'temp'
-                                })
-                            } else if (data['code'] === 0) {
+                    if (this.title === "回复")
+                        $.ajax({
+                            url: "reply",
+                            type: "post",
+                            data: "content=" + this.form.content + "&blockId=" + "&type=add" + "&postId=" + postId + "&time=" + Date.parse(new Date()),
+                            success: function (data) {
+                                data = JSON.parse(data);
+                                console.log(data);
                                 showMessage(data['message']);
+                                if (data['code'] === 1) {
+                                    //window.location.reload();
+                                    app_table.tableData.push({
+                                        id: data['id'],
+                                        content: app_dialog.form.content,
+                                        time: Date.parse(new Date()),
+                                        userName: 'temp'
+                                    })
+                                } else if (data['code'] === 0) {
+                                    showMessage(data['message']);
+                                }
                             }
-                        }
-                    });
+                        });
+                    else
+                        $.ajax({ //TODO:点击修改后禁用输入框
+                            url: "reply",
+                            type: "post",
+                            data: $("#form-change").serialize() + "&id=" + id + "&blockId=" + blockId + "&postId=" + postId,
+                            success: function (data) {
+                                data = JSON.parse(data);
+                                showMessage(data["message"]);
+                                if (data["code"] === 1) {
+                                    $(ele[1]).text($(copy[0]).find("input").val());
+                                    $(ele[2]).text($(copy[1]).find("input").val());
+                                    modal.modal('hide');
+                                }
+                            }
+                        });
                 }
 
             }
         });
-    </script>
-
-    <!--修改学生信息 弹出框-->
-    <div class="modal fade" id="modal-change" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">修改</h4>
-                </div>
-                <form id="form-change" class="container-fluid">
-                    <div class="form-group">
-                        <label>内容</label>
-                        <input type="text" class="form-control" name="content" placeholder="内容">
-                    </div>
-                    <input type="hidden" name="type" value="change">
-                    <div class="modal-footer">
-                        <button type="button" class="modal-btn btn btn-primary">修改</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    </div>
-                </form>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <script>
-        var blockId = ${blockId};
-        var postId = ${postId};
-        $('#modal-change').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var modal = $(this);
-            var ele = button.parent().parent();
-            id = ele.attr("id");
-
-            ele = ele.children();
-            copy = $("#form-change").children();
-            $(copy[0]).find("input").val($(ele[1]).text());
-            $(copy[1]).find("input").val($(ele[2]).text());
-
-            modal.find('.modal-btn').off();
-            modal.find('.modal-btn').on("click", function () {
-                $.ajax({ //TODO:点击修改后禁用输入框
-                    url: "reply",
-                    type: "post",
-                    data: $("#form-change").serialize() + "&id=" + id + "&blockId=" + blockId + "&postId=" + postId,
-                    success: function (data) {
-                        data = JSON.parse(data);
-                        showMessage(data["message"]);
-                        if (data["code"] === 1) {
-                            $(ele[1]).text($(copy[0]).find("input").val());
-                            $(ele[2]).text($(copy[1]).find("input").val());
-                            modal.modal('hide');
-                        }
-                    }
-                });
-            });
-        });
-
     </script>
 
 
