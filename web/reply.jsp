@@ -98,25 +98,33 @@
             <el-table-column
                     prop="userName"
                     label="发帖人"
-                    width="60">
+                    width="80">
             </el-table-column>
             <el-table-column
                     fixed="right"
                     label="操作"
-                    width="120">
-                <template slot-scope="scope">
-                    <el-button
-                            type="text"
+                    width="160">
+                <div slot-scope="scope">
+                    <el-button key="scope.row.id+'123'"
+                            type="warning"
                             size="small"
                             @click="handleEdit(scope.$index, scope.row)">编辑
                     </el-button>
-                    <el-button
-                            @click="deleteRow(scope.$index, tableData)"
-                            type="text"
-                            size="small">
-                        移除
-                    </el-button>
-                </template>
+                    <el-popover key="scope.row.id+'12'"
+                            placement="top"
+                            width="160"
+                            :ref="scope.row.id"
+                            trigger="click">
+                        <p>这是一段内容这是一段内容确定删除吗？</p>
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="mini" type="text"  @click="app_table.$refs[scope.row.id].doClose()">取消</el-button>
+                            <el-button type="primary" size="mini"
+                                       @click="deleteRow(scope.$index, tableData)">确定
+                            </el-button>
+                        </div>
+                        <el-button type="danger" size="small" slot="reference">移除</el-button>
+                    </el-popover>
+                </div>
             </el-table-column>
         </el-table>
     </div>
@@ -138,12 +146,13 @@
                             if (1 == data['code']) {
                                 rows.splice(index, 1);
                             }
-                            showMessage(data['message']);
+                            app_table.$message({message: data['message'], type: 'success'});
                         }
                     });
                 }, handleEdit(index, row) {
                     app_dialog.dialogFormVisible = true;
-                    app_dialog.title = "删除"
+                    app_dialog.title = "删除";
+                    app_dialog.index = index;
 
                 }, formatter(row, column) {
                     //console.log(row, column);
@@ -152,6 +161,7 @@
             },
             data() {
                 return {
+                    visible: false,
                     tableData: [
                         <c:forEach var="reply" items="${replys}">
                         {
@@ -170,7 +180,7 @@
     <div id="dialog">
         <el-button type="text" @click="dialogFormVisible = true;app_dialog.title='回复'">添加</el-button>
 
-        <el-dialog title="dsaf" :visible.sync="dialogFormVisible">
+        <el-dialog title="dsaf" :visible.sync="dialogFormVisible" center>
             <el-form :model="form">
                 <el-form-item label="内容" :label-width="formLabelWidth">
                     <el-input v-model="form.content" autocomplete="off"></el-input>
@@ -187,24 +197,25 @@
         var app_dialog = new Vue({
             el: "#dialog",
             data: {
+                index: 0,
                 title: "回复",
                 dialogFormVisible: false,
                 form: {
                     content: '123123',
                 },
-                formLabelWidth: '120px'
+                formLabelWidth: '40px'
             }, methods: {
                 onSubmit() {
                     if (this.title === "回复")
-                        $.ajax({
+                        $.ajax({//添加内容
                             url: "reply",
                             type: "post",
                             data: "content=" + this.form.content + "&blockId=" + "&type=add" + "&postId=" + postId + "&time=" + Date.parse(new Date()),
                             success: function (data) {
                                 data = JSON.parse(data);
                                 console.log(data);
-                                showMessage(data['message']);
                                 if (data['code'] === 1) {
+                                    app_dialog.$message({message: data['message'], type: 'success'});
                                     //window.location.reload();
                                     app_table.tableData.push({
                                         id: data['id'],
@@ -213,27 +224,25 @@
                                         userName: 'temp'
                                     })
                                 } else if (data['code'] === 0) {
-                                    showMessage(data['message']);
+                                    app_dialog.$message({message: data['message'], type: 'fail'});
                                 }
                             }
                         });
                     else
-                        $.ajax({ //TODO:点击修改后禁用输入框
+                        $.ajax({ //修改内容
                             url: "reply",
                             type: "post",
-                            data: $("#form-change").serialize() + "&id=" + id + "&blockId=" + blockId + "&postId=" + postId,
+                            data: "content=" + this.form.content + "&id=" + app_table.tableData[this.index].id + "&blockId=" + blockId + "&postId=" + postId + "&type=" + "change",
                             success: function (data) {
                                 data = JSON.parse(data);
-                                showMessage(data["message"]);
+                                app_dialog.$message({message: data['message']});
                                 if (data["code"] === 1) {
-                                    $(ele[1]).text($(copy[0]).find("input").val());
-                                    $(ele[2]).text($(copy[1]).find("input").val());
-                                    modal.modal('hide');
+                                    app_table.tableData[app_dialog.index].content = app_dialog.form.content;
+                                    this.dialogFormVisible = false;
                                 }
                             }
                         });
                 }
-
             }
         });
     </script>
