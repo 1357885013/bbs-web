@@ -105,25 +105,26 @@
                     label="操作"
                     width="160">
                 <div slot-scope="scope">
-                    <el-button key="scope.row.id+'123'"
+                    <el-button
                             type="warning"
                             size="small"
                             @click="handleEdit(scope.$index, scope.row)">编辑
                     </el-button>
-                    <el-popover key="scope.row.id+'12'"
+                    <el-popover
                             placement="top"
                             width="160"
-                            :ref="scope.row.id"
                             trigger="click">
                         <p>这是一段内容这是一段内容确定删除吗？</p>
                         <div style="text-align: right; margin: 0">
-                            <el-button size="mini" type="text"  @click="app_table.$refs[scope.row.id].doClose()">取消</el-button>
                             <el-button type="primary" size="mini"
                                        @click="deleteRow(scope.$index, tableData)">确定
                             </el-button>
                         </div>
-                        <el-button type="danger" size="small" slot="reference">移除</el-button>
+                        <el-button type="danger" size="small" slot="reference">
+                            移除
+                        </el-button>
                     </el-popover>
+
                 </div>
             </el-table-column>
         </el-table>
@@ -181,14 +182,14 @@
         <el-button type="text" @click="dialogFormVisible = true;app_dialog.title='回复'">添加</el-button>
 
         <el-dialog title="dsaf" :visible.sync="dialogFormVisible" center>
-            <el-form :model="form">
+            <el-form >
                 <el-form-item label="内容" :label-width="formLabelWidth">
-                    <el-input v-model="form.content" autocomplete="off"></el-input>
+                    <el-input v-model="content" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false;app_dialog.onSubmit()">确 定</el-button>
+                <el-button type="primary" @click="dialogFormVisible = false;submit()">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -200,17 +201,17 @@
                 index: 0,
                 title: "回复",
                 dialogFormVisible: false,
-                form: {
+
                     content: '123123',
-                },
+
                 formLabelWidth: '40px'
             }, methods: {
-                onSubmit() {
+                submit:function (){
                     if (this.title === "回复")
                         $.ajax({//添加内容
                             url: "reply",
                             type: "post",
-                            data: "content=" + this.form.content + "&blockId=" + "&type=add" + "&postId=" + postId + "&time=" + Date.parse(new Date()),
+                            data: "content=" + content + "&blockId=" + "&type=add" + "&postId=" + postId + "&time=" + Date.parse(new Date()),
                             success: function (data) {
                                 data = JSON.parse(data);
                                 console.log(data);
@@ -219,7 +220,7 @@
                                     //window.location.reload();
                                     app_table.tableData.push({
                                         id: data['id'],
-                                        content: app_dialog.form.content,
+                                        content: app_dialog.content,
                                         time: Date.parse(new Date()),
                                         userName: 'temp'
                                     })
