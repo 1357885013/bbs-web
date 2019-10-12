@@ -1,6 +1,9 @@
 <%@ page import="com.ljj.entity.Block" %>
 <%@ page import="com.ljj.service.impl.BlockService" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="org.springframework.context.ApplicationContext" %>
+<%@ page import="org.springframework.context.support.ClassPathXmlApplicationContext" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -57,7 +60,7 @@
 <div class="center-block">
     <%
         BlockService blockService = new BlockService();
-        ArrayList<Block> blocks = blockService.listAll();
+        List<Block> blocks = blockService.listAll();
         pageContext.setAttribute("blocks", blocks);
         
         //response.getOutputStream().write(Arrays.toString(blocks.toArray()).getBytes());

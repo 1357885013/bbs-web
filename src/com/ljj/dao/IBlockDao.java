@@ -3,10 +3,10 @@ package com.ljj.dao;
 import com.ljj.entity.Block;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
 public interface IBlockDao {
-    public ArrayList<Block> getAllBlocks();
+    public List<Block> getAllBlocks();
 
     public boolean create(Block block) throws SQLException;
 

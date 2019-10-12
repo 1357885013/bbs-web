@@ -2,10 +2,10 @@ package com.ljj.service;
 
 import com.ljj.entity.Block;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface IBlockService {
-    ArrayList<Block> listAll();
+    List<Block> listAll();
 
     //public boolean create(String name);
 

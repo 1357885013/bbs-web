@@ -3,56 +3,50 @@ package com.ljj.dao.impl;
 import com.ljj.dao.IBlockDao;
 import com.ljj.entity.Block;
 import com.ljj.factory.Factory;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
-public class BlockDao implements IBlockDao {
+@Repository("BlockDao")
+public class BlockDao extends JdbcDaoSupport implements IBlockDao {
+    @Autowired
+    private ComboPooledDataSource dataSource;
+
+    @PostConstruct
+    private void init() {
+        super.setDataSource(dataSource);
+    }
+
     @Override
-    public ArrayList<Block> getAllBlocks() {
-        Connection con = Factory.getCon();
-        PreparedStatement state = null;
-        ResultSet res = null;
-        ArrayList<Block> blocks = new ArrayList<>();
-        try {
-            state = con.prepareStatement("select * from block");
-            res = state.executeQuery();
-            while (res.next()) {
-                blocks.add(new Block(res.getInt(1), res.getString(2)));
+    public List<Block> getAllBlocks() {
+
+        return super.getJdbcTemplate().query("select * from block", new RowMapper<Block>() {
+            @Override
+            public Block mapRow(ResultSet resultSet, int i) throws SQLException {
+                return new Block(resultSet.getInt(1), resultSet.getString(2));
             }
-        } catch (SQLException e) {
-            System.out.println(e.getSQLState() + e.getSQLState());
-            e.printStackTrace();
-            System.exit(-1);
-        } finally {
-            Factory.closeAll(res, state, con);
-        }
-        return blocks;
+        });
     }
 
     @Override
     public boolean create(Block block) throws SQLException {
-        Connection con = Factory.getCon();
-        PreparedStatement state = null;
-        try {
-            state = con.prepareStatement("insert into block values(null,?)");
-            state.setString(1, block.getName());
-
-
-            if (state.executeUpdate() > 0) {
-                int id = getIdByName(block.getName());
-                if (id != -1) {
-                    block.setId(id);
-                    return true;
-                }
+        if (getJdbcTemplate().update("insert into block values(null,?)", block.getName()) > 0) {
+            int id = getIdByName(block.getName());
+            if (id != -1) {
+                block.setId(id);
+                return true;
             }
-            return false;
-        } finally {
-            Factory.closeAll(null, state, con);
         }
+        return false;
     }
 
     @Override
@@ -81,26 +75,7 @@ public class BlockDao implements IBlockDao {
 
     @Override
     public int getIdByName(String name) {
-        Connection con = Factory.getCon();
-        PreparedStatement state = null;
-        ResultSet res = null;
-        try {
-            state = con.prepareStatement("select bId from block where bName=?");
-            state.setString(1, name);
-
-            res = state.executeQuery();
-            if (res.next()) {
-                return res.getInt(1);
-            } else
-                return -1;
-        } catch (SQLException e) {
-            System.out.println(e.getSQLState() + e.getSQLState());
-            e.printStackTrace();
-            System.exit(-1);
-        } finally {
-            Factory.closeAll(res, state, con);
-        }
-        return -1;
+        return getJdbcTemplate().queryForObject("select bId from block where bName=?", Integer.class,name);
     }
 
     @Override
@@ -122,8 +97,9 @@ public class BlockDao implements IBlockDao {
         }
         return false;
     }
+
     @Override
-    public boolean changeName(int id,String name) {
+    public boolean changeName(int id, String name) {
         Connection con = Factory.getCon();
         PreparedStatement state = null;
         try {

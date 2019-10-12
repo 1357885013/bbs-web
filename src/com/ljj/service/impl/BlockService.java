@@ -4,6 +4,12 @@ import com.ljj.dao.impl.BlockDao;
 import com.ljj.entity.Block;
 import com.ljj.service.IBlockService;
 import com.ljj.util.Scan;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,12 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+@Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED, readOnly = false)
 public class BlockService extends HttpServlet implements IBlockService {
     public Block block = new Block();
-    private BlockDao dao = new BlockDao();
+    private ApplicationContext ac = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+    private BlockDao dao = (BlockDao) ac.getBean("BlockDao");
     private Scanner scan = Scan.scan;
 
     @Override
@@ -68,7 +76,7 @@ public class BlockService extends HttpServlet implements IBlockService {
             case "delete":
                 id = Integer.parseInt(req.getParameter("id"));
                 JSONmessage = "{\"code\":%d,\"message\":\"%s\"}";
-                if (id==-1)
+                if (id == -1)
                     message = "数据错误";
                 else if (delete(id)) {
                     message = ("删除成功");
@@ -82,8 +90,8 @@ public class BlockService extends HttpServlet implements IBlockService {
 
 
     @Override
-    public ArrayList<Block> listAll() {
-        ArrayList<Block> res = dao.getAllBlocks();
+    public List<Block> listAll() {
+        List<Block> res = dao.getAllBlocks();
         return res;
     }
 
@@ -102,7 +110,8 @@ public class BlockService extends HttpServlet implements IBlockService {
 
     @Override
     public boolean delete(int id) {
-        return dao.delete(id);
+        dao.delete(id);
+        return dao.delete(1);
     }
 
     @Override
